@@ -1,3 +1,4 @@
+import atexit
 import logging
 import os
 import sys
@@ -18,7 +19,17 @@ LOG = logging.getLogger("unlicense")
 
 
 def main() -> None:
+    atexit.register(_pause_before_exit)
     fire.Fire(run_unlicense)
+
+
+def _pause_before_exit() -> None:
+    try:
+        if sys.stdin and hasattr(sys.stdin, "isatty") and sys.stdin.isatty():
+            input("\nPress ENTER to exit ...")
+    except Exception:
+        # ponytail: ignore EOF/interrupt on exit; upgrade if exit code propagation from prompt needed
+        pass
 
 
 def run_unlicense(

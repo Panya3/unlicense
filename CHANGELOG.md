@@ -1,10 +1,14 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Pause for user input before exiting on interactive consoles
+
 ### Fixed
 - Improve reliability of DLL unpacking
 - Detect DLL files using PE characteristics instead of file extension
 - Fix broken ANSI escape sequences in console output
+
 
 ## [0.4.0] - 2023-08-14
 ### Added

@@ -240,3 +240,12 @@ def interpreter_can_dump_pe(pe_file_path: str) -> bool:
         return bool(pe_architecture == lief.PE.MACHINE_TYPES.I386)
 
     return False
+
+
+def is_pe_dll(pe_file_path: str) -> bool:
+    binary = lief.PE.parse(pe_file_path)
+    if binary is not None:
+        return binary.header.has_characteristic(
+            lief.PE.HEADER_CHARACTERISTICS.DLL)
+    # ponytail: fallback to extension when header parse fails; upgrade if non-PE formats needed
+    return pe_file_path.lower().endswith(".dll")

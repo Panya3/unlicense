@@ -1,8 +1,5 @@
 "use strict";
 
-const green = "\x1b[1;36m"
-const reset = "\x1b[0m"
-
 let allocatedBuffers = [];
 let originalPageProtections = new Map();
 let oepTracingListeners = [];
@@ -18,7 +15,7 @@ let skipTlsInstr64 = null;
 let tlsCallbackCount = 0;
 
 function log(message) {
-    console.log(`${green}frida-agent${reset}: ${message}`);
+    console.log(`frida-agent: ${message}`);
 }
 
 function initializeTrampolines() {
@@ -237,10 +234,10 @@ function skipDllEntryPoint(exceptionCtx) {
 
 // Define available RPCs
 rpc.exports = {
-    setupOepTracing: function (moduleName, expectedOepRanges) {
+    setupOepTracing: function (moduleName, expectedOepRanges, isDll) {
         log(`Setting up OEP tracing for "${moduleName}"`);
 
-        let targetIsDll = moduleName.endsWith(".dll");
+        let targetIsDll = isDll !== undefined ? isDll : moduleName.endsWith(".dll");
         let dumpedModule = null;
 
         initializeTrampolines();

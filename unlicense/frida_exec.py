@@ -155,11 +155,16 @@ def _str_to_architecture(frida_arch: str) -> Architecture:
     raise ValueError
 
 
-def spawn_and_instrument(
-        pe_path: Path, text_section_ranges: List[MemoryRange],
-        notify_oep_reached: OepReachedCallback) -> ProcessController:
+def spawn_and_instrument(pe_path: Path,
+                         text_section_ranges: List[MemoryRange],
+                         notify_oep_reached: OepReachedCallback,
+                         is_dll: Optional[bool] = None) -> ProcessController:
+    if is_dll is None:
+        from .dump_utils import is_pe_dll
+        is_dll = is_pe_dll(str(pe_path))
+
     pid: int
-    if pe_path.suffix == ".dll":
+    if is_dll:
         # Use `rundll32` to load the DLL
         rundll32_path = "C:\\Windows\\System32\\rundll32.exe"
         pid = frida.spawn(
@@ -181,7 +186,8 @@ def spawn_and_instrument(
     process_controller = FridaProcessController(pid, main_module_name, session,
                                                 script)
     frida_rpc.setup_oep_tracing(pe_path.name, [[r.base, r.size]
-                                               for r in text_section_ranges])
+                                               for r in text_section_ranges],
+                                is_dll)
     frida.resume(pid)
 
     return process_controller

@@ -185,9 +185,10 @@ def spawn_and_instrument(pe_path: Path,
     frida_rpc = script.exports
     process_controller = FridaProcessController(pid, main_module_name, session,
                                                 script)
+    from .logger import should_use_color
     frida_rpc.setup_oep_tracing(pe_path.name, [[r.base, r.size]
                                                for r in text_section_ranges],
-                                is_dll)
+                                is_dll, should_use_color())
     frida.resume(pid)
 
     return process_controller

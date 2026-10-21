@@ -13,9 +13,14 @@ let skipDllOepInstr64 = null;
 let skipTlsInstr32 = null;
 let skipTlsInstr64 = null;
 let tlsCallbackCount = 0;
+let useAnsiColor = true;
 
 function log(message) {
-    console.log(`frida-agent: ${message}`);
+    if (useAnsiColor) {
+        console.log(`\x1b[1;36mfrida-agent\x1b[0m: ${message}`);
+    } else {
+        console.log(`frida-agent: ${message}`);
+    }
 }
 
 function initializeTrampolines() {
@@ -234,7 +239,10 @@ function skipDllEntryPoint(exceptionCtx) {
 
 // Define available RPCs
 rpc.exports = {
-    setupOepTracing: function (moduleName, expectedOepRanges, isDll) {
+    setupOepTracing: function (moduleName, expectedOepRanges, isDll, useColor) {
+        if (useColor !== undefined) {
+            useAnsiColor = Boolean(useColor);
+        }
         log(`Setting up OEP tracing for "${moduleName}"`);
 
         let targetIsDll = isDll !== undefined ? isDll : moduleName.endsWith(".dll");
